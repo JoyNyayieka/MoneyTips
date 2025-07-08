@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  
+  /* Custom selection color */
+  ::selection {
+    @apply bg-indigo-500 text-white;
+  }
+}
+
+@layer components {
+  /* Chat message bubbles */
+  .user-message {
+    @apply bg-indigo-100 ml-auto p-3 rounded-lg max-w-xs md:max-w-md;
+  }
+  
+  .bot-message {
+    @apply bg-gray-100 mr-auto p-3 rounded-lg max-w-xs md:max-w-md;
+  }
+}
+
+@layer utilities {
+  /* Pulse animation for recording */
+  .animate-pulse-slow {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+}
