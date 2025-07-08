@@ -27,7 +27,7 @@ export default function BudgetChart() {
             data={data}
             margin={{
               top: 5,
-              right: 30,
+              right: 39,
               left: 20,
               bottom: 5,
             }}

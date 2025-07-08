@@ -1,6 +1,13 @@
-import React from 'react';
+
 import { Link } from 'react-router-dom';
-import { MoneyIcon, ChatIcon, DashboardIcon } from './icons';
+import { 
+  FiHome, 
+  FiMessageSquare, 
+  FiPieChart, 
+  FiDollarSign,
+  FiClock,
+  FiSettings
+} from 'react-icons/fi';
 
 export default function Sidebar() {
   return (
@@ -10,28 +17,46 @@ export default function Sidebar() {
           <li>
             <Link 
               to="/dashboard" 
-              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors"
+              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600"
             >
-              <DashboardIcon className="w-5 h-5" />
-              <span className="ml-3 font-medium">Dashboard</span>
+              <FiHome className="w-5 h-5" />
+              <span className="ml-3">Dashboard</span>
             </Link>
           </li>
           <li>
             <Link 
               to="/chat" 
-              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors"
+              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600"
             >
-              <ChatIcon className="w-5 h-5" />
-              <span className="ml-3 font-medium">AI Chat</span>
+              <FiMessageSquare className="w-5 h-5" />
+              <span className="ml-3">AI Chat</span>
             </Link>
           </li>
           <li>
             <Link 
               to="/budget" 
-              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600 transition-colors"
+              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600"
             >
-              <MoneyIcon className="w-5 h-5" />
-              <span className="ml-3 font-medium">Budget</span>
+              <FiDollarSign className="w-5 h-5" />
+              <span className="ml-3">Budget</span>
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/history" 
+              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600"
+            >
+              <FiClock className="w-5 h-5" />
+              <span className="ml-3">Chat History</span>
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/settings" 
+              className="flex items-center p-3 rounded-lg hover:bg-indigo-50 text-gray-700 hover:text-indigo-600"
+            >
+              <FiSettings className="w-5 h-5" />
+              <span className="ml-3">Settings</span>
             </Link>
           </li>
         </ul>
