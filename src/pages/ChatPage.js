@@ -14,6 +14,7 @@
 import React, { useState, useRef } from 'react';
 import { FiMic, FiPaperclip, FiSend } from 'react-icons/fi';
 import { FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
+import {callAPI} from 'apis/api'
 
 const ChatView = () => {
   const [input, setInput] = useState('');
@@ -22,7 +23,7 @@ const ChatView = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const fileInputRef = useRef(null);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim() || selectedFile) {
       const newMessage = {
         text: input,
@@ -32,16 +33,40 @@ const ChatView = () => {
       setMessages([...messages, newMessage]);
       setInput('');
       setSelectedFile(null);
-      
-      // Simulate AI response
-      setTimeout(() => {
-        setMessages(prev => [...prev, {
-          text: selectedFile 
-            ? `I've received your ${selectedFile.type.split('/')[0]} file. How can I help you with it?` 
-            : "Thanks for your message! Here's some financial advice...",
-          sender: 'bot'
-        }]);
-      }, 1000);
+
+      try {
+
+        let botMessages = []
+
+        if (selectedFile){
+          const formData = new FormData();
+          formData.append("file", selectedFile);
+
+          const fileResponse = await callAPI("/upload_file", formData);
+          botMessages.push({
+            text: `I've received your file: "${fileResponse.filename}" (${fileResponse.size} bytes).`,
+            sender: 'bot'
+        });
+        }
+
+        if (input.trim()) {
+          const textResponse = await callAPI("/receive_text", { text: input });
+          botMessages.push({
+            text: textResponse.message,
+            sender: 'bot'
+          });
+        }
+
+        setMessages(prev => [
+          ...prev,
+          ...botMessages
+        ]);
+      } catch (error){
+        setMessages(prev => [
+          ...prev,
+          {text:"Error: " + error.message, sender: 'bot'}
+        ]);
+      }
     }
   };
 
