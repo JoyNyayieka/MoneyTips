@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { auth } from 'apis/api';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -23,7 +24,13 @@ export default function RegisterForm() {
     }
     try {
       // Add registration logic here
-      console.log('Registering user:', formData);
+      const payload = {
+        username: formData.name,
+        email: formData.email,
+        password: formData.password
+      };
+      const res = await auth("register", payload)
+      console.log('Registered user:', formData);
       navigate('/login');
     } catch (err) {
       setError('Registration failed');

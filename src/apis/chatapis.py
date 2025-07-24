@@ -1,19 +1,9 @@
-from fastapi import FastAPI
+from userapis import app
 from fastapi import HTTPException
 from pydantic import BaseModel, field_validator
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import UploadFile, File
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # frontend URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 received_texts: List[str] = []
 
@@ -32,14 +22,12 @@ class TextInput(BaseModel):
 @app.post("/receive_text")
 async def receive_text(input: TextInput):
     try:
-        validated = TextInput.model_validate({"text": input.text})
+        received_texts.append(input.text)
+        message = process_text_input(input.text)  
+        return {"message": message}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-    received_texts.append(input.text)
-
-    message = process_text_input(validated)  
-    return {"message": message}
-
+    
 @app.post("/upload_file")
 async def upload_file(file: UploadFile = File(...)):
     try:
@@ -53,6 +41,7 @@ async def upload_file(file: UploadFile = File(...)):
 @app.get("/display_received_texts")
 def display_received_texts():
     return {"received_texts": received_texts}
+
 
 def process_text_input(text: str) -> str:
     # function to simulate model processing user input

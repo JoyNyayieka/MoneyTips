@@ -14,7 +14,7 @@
 import React, { useState, useRef } from 'react';
 import { FiMic, FiPaperclip, FiSend } from 'react-icons/fi';
 import { FaMicrophone, FaMicrophoneSlash } from 'react-icons/fa';
-import {callAPI} from 'apis/api'
+import { chat } from 'apis/api';
 
 const ChatView = () => {
   const [input, setInput] = useState('');
@@ -42,7 +42,7 @@ const ChatView = () => {
           const formData = new FormData();
           formData.append("file", selectedFile);
 
-          const fileResponse = await callAPI("/upload_file", formData);
+          const fileResponse = await chat("upload_file", formData);
           botMessages.push({
             text: `I've received your file: "${fileResponse.filename}" (${fileResponse.size} bytes).`,
             sender: 'bot'
@@ -50,7 +50,7 @@ const ChatView = () => {
         }
 
         if (input.trim()) {
-          const textResponse = await callAPI("/receive_text", { text: input });
+          const textResponse = await chat("send_text", input );
           botMessages.push({
             text: textResponse.message,
             sender: 'bot'
