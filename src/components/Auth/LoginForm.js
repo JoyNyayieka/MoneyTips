@@ -1,3 +1,4 @@
+import { auth } from 'apis/api';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -11,7 +12,12 @@ export default function LoginForm() {
     e.preventDefault();
     try {
       // Add your authentication logic here
-      console.log('Logging in with:', { email, password });
+      const payload = {
+        email: email,
+        password: password
+      };
+      const res = await auth("login", payload)
+      console.log('Logging in with:', payload);
       navigate('/dashboard');
     } catch (err) {
       setError('Invalid credentials');
