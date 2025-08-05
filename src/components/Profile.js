@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
+import { auth } from 'apis/api';
 
 export default function ProfileDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Add logout logic here
-    console.log('User logged out');
-  };
+  try {
+    const res = auth("logout")
+    navigate("/dashboard")
+    
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+};
 
   return (
     <div className="relative">

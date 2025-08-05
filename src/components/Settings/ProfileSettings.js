@@ -1,86 +1,124 @@
-import React, { useState } from 'react';
-import { FiUser, FiMail, FiCalendar } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { profile } from 'apis/api';
+
 
 export default function ProfileSettings() {
-  const [formData, setFormData] = useState({
-    name: 'John Doe',
-    email: 'john@example.com',
-    bio: 'Financial enthusiast and investor'
-  });
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ name: '', email: '', bio: '' });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    profile("get")
+      .then((data) => {
+        if (data?.email && data?.username) {
+          setFormData({
+            name: data.username || '',
+            email: data.email || '',
+            bio: data.bio || '',
+        });
+      } else {
+          setError('Unexpected response from server.');
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.message === 'Token missing' || err.message.includes('401')) {
+          navigate('/login');
+        } else {
+          setError(`Failed to load profile.${err.message}`);
+          setLoading(false);
+        }
+      });
+  }, [navigate]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Save profile changes
-    console.log('Profile updated:', formData);
+    setError('');
+    setSuccessMessage('');
+
+    profile("update", formData)
+      .then(() => {
+        setSuccessMessage('Profile updated successfully.');
+      })
+      .catch((err) => {
+        if (err.message === 'Token missing' || err.message.includes('401')) {
+          navigate('/login');
+        } else {
+          setError('Update failed: ' + err.message);
+        }
+      });
   };
 
+  if (loading) return <p className="text-center mt-10">Loading profile...</p>;
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="flex items-center space-x-6">
-        <div className="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center">
-          <FiUser className="text-indigo-600 text-3xl" />
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold mb-6">Edit Profile</h2>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {error}
         </div>
+      )}
+
+      {successMessage && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          {successMessage}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <button type="button" className="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-            Change Photo
-          </button>
-          <p className="text-gray-500 text-sm mt-1">JPG, GIF or PNG. Max size 2MB</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-gray-700 mb-2">Full Name</label>
-          <div className="relative">
-            <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-          </div>
+          <label className="block mb-1 font-medium">Name</label>
+          <input
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
         </div>
 
         <div>
-          <label className="block text-gray-700 mb-2">Email</label>
-          <div className="relative">
-            <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-          </div>
+          <label className="block mb-1 font-medium">Email</label>
+          <input
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
         </div>
-      </div>
 
-      <div>
-        <label className="block text-gray-700 mb-2">Bio</label>
-        <textarea
-          name="bio"
-          value={formData.bio}
-          onChange={handleChange}
-          rows={3}
-          className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-        />
-      </div>
+        <div>
+          <label className="block mb-1 font-medium">Bio</label>
+          <textarea
+            name="bio"
+            value={formData.bio}
+            onChange={handleChange}
+            rows="4"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
 
-      <div className="flex justify-end">
         <button
           type="submit"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg"
+          className="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
         >
           Save Changes
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }

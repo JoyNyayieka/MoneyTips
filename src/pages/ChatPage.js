@@ -38,23 +38,28 @@ const ChatView = () => {
 
         let botMessages = []
 
-        if (selectedFile){
-          const formData = new FormData();
-          formData.append("file", selectedFile);
-
-          const fileResponse = await chat("upload_file", formData);
+        if (selectedFile) {
+          const fileResponse = await chat("upload_file", selectedFile);
           botMessages.push({
             text: `I've received your file: "${fileResponse.filename}" (${fileResponse.size} bytes).`,
             sender: 'bot'
-        });
+          });
         }
 
         if (input.trim()) {
           const textResponse = await chat("send_text", input );
-          botMessages.push({
-            text: textResponse.message,
-            sender: 'bot'
-          });
+          
+          if (textResponse && textResponse.message) {
+            botMessages.push({
+              text: textResponse.message,
+              sender: 'bot'
+            });
+          } else {
+            botMessages.push({
+              text: "Something went wrong — no response from server.",
+              sender: 'bot'
+            });
+          }
         }
 
         setMessages(prev => [

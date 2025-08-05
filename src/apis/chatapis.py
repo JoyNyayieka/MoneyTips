@@ -1,11 +1,12 @@
-from userapis import app
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from pydantic import BaseModel, field_validator
 from typing import List
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import UploadFile, File
 
+router = APIRouter()
 received_texts: List[str] = []
+
 
 class TextInput(BaseModel):
     text: str
@@ -19,7 +20,7 @@ class TextInput(BaseModel):
             raise ValueError('Text cannot be empty')
         return v.strip()
 
-@app.post("/receive_text")
+@router.post("/receive_text")
 async def receive_text(input: TextInput):
     try:
         received_texts.append(input.text)
@@ -28,7 +29,7 @@ async def receive_text(input: TextInput):
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@app.post("/upload_file")
+@router.post("/upload_file")
 async def upload_file(file: UploadFile = File(...)):
     try:
         processed_file = await process_uploaded_file(file)
@@ -38,7 +39,7 @@ async def upload_file(file: UploadFile = File(...)):
     return processed_file
 
 
-@app.get("/display_received_texts")
+@router.get("/display_received_texts")
 def display_received_texts():
     return {"received_texts": received_texts}
 

@@ -1,16 +1,40 @@
 import React, { useState } from 'react';
 import { FiLock, FiShield } from 'react-icons/fi';
+import {profile} from 'apis/api'
 
 export default function SecuritySettings() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Change password logic
-    console.log('Password changed');
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (newPassword !== confirmPassword) {
+    alert("New passwords do not match");
+    return;
+  }
+
+  try {
+    const payload = {
+      current_password: currentPassword,
+      new_password: newPassword,
+      confirm_password: confirmPassword,
+    };
+
+    const res = await profile("password", payload);
+    alert(res.message || "Password changed successfully");
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  } catch (err) {
+     alert(
+      typeof err.message === "string"
+        ? err.message
+        : JSON.stringify(err.message || err)
+    );
+  }
+};
 
   return (
     <div className="space-y-8">
